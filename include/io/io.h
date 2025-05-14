@@ -51,6 +51,9 @@ class IO {
   //! Return json analysis object
   Json analysis() const;
 
+  //! Return json particles_treatment object
+  Json particles_treatment() const;
+
   //! Return json object
   Json json_object(const std::string& key) const;
 
