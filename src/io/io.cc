@@ -202,6 +202,9 @@ std::string mpm::IO::analysis_type() const {
 //! Return json analysis object
 Json mpm::IO::analysis() const { return json_["analysis"]; }
 
+//! Return json particles_treatment object
+Json mpm::IO::particles_treatment() const { return json_["particles_treatment"]; }
+
 //! Return json object
 Json mpm::IO::json_object(const std::string& key) const {
   Json empty;
