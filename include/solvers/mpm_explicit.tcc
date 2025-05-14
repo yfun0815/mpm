@@ -83,6 +83,7 @@ bool mpm::MPMExplicit<Tdim>::solve() {
 #endif
 #endif
     }
+    this->delete_particles();
     //! Particle entity sets and velocity constraints
     this->particle_entity_sets(false);
     this->particle_velocity_constraints();
@@ -98,6 +99,8 @@ bool mpm::MPMExplicit<Tdim>::solve() {
     this->mpi_domain_decompose(initial_step);
   }
 
+
+  this->delete_particles();
   // Create nodal properties
   if (interface_ or absorbing_boundary_) mesh_->create_nodal_properties();
 
@@ -109,9 +112,27 @@ bool mpm::MPMExplicit<Tdim>::solve() {
 
   auto solver_begin = std::chrono::steady_clock::now();
   // Main loop
-  for (; step_ < nsteps_; ++step_) {
+  int last_percent = -1;
 
-    if (mpi_rank == 0) console_->info("Step: {} of {}.\n", step_, nsteps_);
+  for (; step_ < nsteps_; ++step_) {
+      if (mpi_rank == 0) {
+          int percent = static_cast<int>(100.0 * step_ / nsteps_);
+          if (percent != last_percent) {
+              last_percent = percent;
+              int bar_width = 50;
+              int pos = percent * bar_width / 100;
+
+              std::string bar = "[";
+              for (int i = 0; i < bar_width; ++i) {
+                  if (i < pos) bar += "#";
+                  else if (i == pos) bar += ">";
+                  else bar += "-";
+              }
+              bar += "]";
+
+              console_->info("Step: {} of {}. {}% {}\n", step_, nsteps_, percent, bar);
+          }
+      }
 
 #ifdef USE_MPI
 #ifdef USE_GRAPH_PARTITIONING

@@ -1501,6 +1501,24 @@ void mpm::MPMBase<Tdim>::particle_velocity_constraints() {
   }
 }
 
+// Delete_particles function
+template <unsigned Tdim>
+void mpm::MPMBase<Tdim>::delete_particles() {
+  try {
+    auto particles_treatment_prop = io_->particles_treatment();
+
+    if (particles_treatment_prop.contains("delete_particle_ids")) {
+      for (const auto& id : particles_treatment_prop.at("delete_particle_ids")) {
+        mpm::Index pid = id.get<mpm::Index>();
+
+        bool success = mesh_->remove_particle_by_id(pid);
+      }
+    }
+  } catch (const std::exception& e) {
+    std::cerr << "Error deleting particles: " << e.what() << "\n";
+  }
+}
+
 // Particles stresses
 template <unsigned Tdim>
 void mpm::MPMBase<Tdim>::particles_stresses(
