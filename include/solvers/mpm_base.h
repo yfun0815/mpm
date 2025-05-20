@@ -103,6 +103,9 @@ class MPMBase : public MPM {
 
   //! Apply Absorbing Constraints
   void nodal_absorbing_constraints();
+  
+  //! Delete_particles function
+  void delete_particles();
 
  protected:
   //! Initialise implicit solver
