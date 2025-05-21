@@ -86,6 +86,9 @@ class ParticleBase {
   //! \retval particle POD of the particle
   virtual std::shared_ptr<void> pod() const = 0;
 
+  //! Reset particle displacement
+  virtual void reset_displacement() = 0;
+
   //! Return id of the particleBase
   Index id() const { return id_; }
 

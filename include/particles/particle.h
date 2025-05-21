@@ -468,6 +468,8 @@ class Particle : public ParticleBase<Tdim> {
   void initialise_constitutive_law(double dt) noexcept override;
   /**@}*/
 
+  void reset_displacement() override { displacement_.setZero(); }
+
  protected:
   //! Initialise particle material container
   //! \details This function allocate memory and initialise the material related

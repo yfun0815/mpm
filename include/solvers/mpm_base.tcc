@@ -1642,12 +1642,39 @@ void mpm::MPMBase<Tdim>::delete_particles() {
         mpm::Index pid = id.get<mpm::Index>();
 
         bool success = mesh_->remove_particle_by_id(pid);
+
       }
+      // Output success info
+      console_->info("Successfully delete provided particles.");
     }
   } catch (const std::exception& e) {
     std::cerr << "Error deleting particles: " << e.what() << "\n";
   }
 }
+
+// Reset_particles_displacement function
+template <unsigned Tdim>
+void mpm::MPMBase<Tdim>::reset_particles_displacement() {
+  try {
+    auto particles_treatment_prop = io_->particles_treatment();
+
+    if (particles_treatment_prop.contains("reset_displacement") &&
+        particles_treatment_prop["reset_displacement"].get<bool>() == true) {
+
+      // Iterate over particles and reset displacement
+      mesh_->iterate_over_particles(std::bind(
+          &mpm::ParticleBase<Tdim>::reset_displacement,
+          std::placeholders::_1));
+
+      // Output success info
+      console_->info("Successfully reset particle displacements.");
+    }
+
+  } catch (const std::exception& e) {
+    std::cerr << "Error resetting particle displacements: " << e.what() << "\n";
+  }
+}
+
 
 // Particles stresses
 template <unsigned Tdim>

@@ -107,6 +107,9 @@ class MPMBase : public MPM {
   //! Delete_particles function
   void delete_particles();
 
+  //! reset_particles_displacement function
+  void reset_particles_displacement();
+
  protected:
   //! Initialise implicit solver
   //! \param[in] lin_solver_props Linear solver properties

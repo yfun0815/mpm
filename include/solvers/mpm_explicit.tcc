@@ -84,7 +84,11 @@ bool mpm::MPMExplicit<Tdim>::solve() {
 #endif
 #endif
     }
+
     this->delete_particles();
+
+    this->reset_particles_displacement();
+    
     //! Particle entity sets and velocity constraints
     this->particle_entity_sets(false);
     this->particle_velocity_constraints();
