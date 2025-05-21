@@ -1630,7 +1630,6 @@ void mpm::MPMBase<Tdim>::particle_velocity_constraints() {
                    __LINE__, exception.what());
   }
 }
-
 // Delete_particles function
 template <unsigned Tdim>
 void mpm::MPMBase<Tdim>::delete_particles() {
@@ -1674,7 +1673,6 @@ void mpm::MPMBase<Tdim>::reset_particles_displacement() {
     std::cerr << "Error resetting particle displacements: " << e.what() << "\n";
   }
 }
-
 
 // Particles stresses
 template <unsigned Tdim>

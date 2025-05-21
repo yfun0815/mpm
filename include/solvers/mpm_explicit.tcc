@@ -84,11 +84,10 @@ bool mpm::MPMExplicit<Tdim>::solve() {
 #endif
 #endif
     }
-
+    // delete the provided particles by id
     this->delete_particles();
-
+    // reset all particles displacement
     this->reset_particles_displacement();
-    
     //! Particle entity sets and velocity constraints
     this->particle_entity_sets(false);
     this->particle_velocity_constraints();
@@ -104,7 +103,7 @@ bool mpm::MPMExplicit<Tdim>::solve() {
     this->mpi_domain_decompose(initial_step);
   }
 
-
+  
   // Create nodal properties
   if (interface_ or absorbing_boundary_) mesh_->create_nodal_properties();
 
