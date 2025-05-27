@@ -97,7 +97,7 @@ mpm::ModifiedCamClay<Tdim>::ModifiedCamClay(unsigned id,
 
 //! Initialise state variables
 template <unsigned Tdim>
-mpm::dense_map mpm::ModifiedCamClay<Tdim>::initialise_state_variables() {
+mpm::dense_map mpm::ModifiedCamClay<Tdim>::initialise_state_variables(double y) {
   mpm::dense_map state_vars = {
       // Yield state: 0: elastic, 1: yield
       {"yield_state", 0},

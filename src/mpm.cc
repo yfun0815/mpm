@@ -8,6 +8,7 @@
 #include "mpm_implicit.h"
 #include "mpm_semi_implicit_navierstokes.h"
 #include "mpm_semi_implicit_twophase.h"
+#include "mpm_explicit_twopoint.h"
 
 namespace mpm {
 //! Velocity update type
@@ -68,5 +69,10 @@ static Register<mpm::MPM, mpm::MPMSemiImplicitTwoPhase<2>,
 static Register<mpm::MPM, mpm::MPMSemiImplicitTwoPhase<3>,
                 const std::shared_ptr<mpm::IO>&>
     mpm_semi_implicit_twophase_3d("MPMSemiImplicitTwoPhase3D");
+
+// 2D Explicit Two Point MPM
+static Register<mpm::MPM, mpm::MPMExplicitTwoPoint<2>,
+                const std::shared_ptr<mpm::IO>&>
+    mpm_explicit_twopoint_2d("MPMExplicitTwoPoint2D");
 
 }  // namespace mpm

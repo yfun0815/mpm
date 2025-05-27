@@ -112,7 +112,7 @@ mpm::NorSand<Tdim>::NorSand(unsigned id, const Json& material_properties)
 
 //! Initialise state variables
 template <unsigned Tdim>
-mpm::dense_map mpm::NorSand<Tdim>::initialise_state_variables() {
+mpm::dense_map mpm::NorSand<Tdim>::initialise_state_variables(double y) {
   const double e_i0 =
       (use_bolton_csl_)
           ? (e_max_ -

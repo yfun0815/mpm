@@ -37,7 +37,7 @@ class HenckyHyperElastic : public Material<Tdim> {
 
   //! Initialise history variables
   //! \retval state_vars State variables with history
-  mpm::dense_map initialise_state_variables() override {
+  mpm::dense_map initialise_state_variables(double y) override {
     mpm::dense_map state_vars;
     return state_vars;
   }

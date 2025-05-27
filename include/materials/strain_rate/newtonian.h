@@ -37,7 +37,7 @@ class Newtonian : public Material<Tdim> {
 
   //! Initialise history variables
   //! \retval state_vars State variables with history
-  mpm::dense_map initialise_state_variables() override;
+  mpm::dense_map initialise_state_variables(double y) override;
 
   //! State variables
   std::vector<std::string> state_variables() const override;

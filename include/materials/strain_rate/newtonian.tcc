@@ -26,7 +26,7 @@ mpm::Newtonian<Tdim>::Newtonian(unsigned id, const Json& material_properties)
 
 //! Initialise history variables
 template <unsigned Tdim>
-mpm::dense_map mpm::Newtonian<Tdim>::initialise_state_variables() {
+mpm::dense_map mpm::Newtonian<Tdim>::initialise_state_variables(double y) {
   mpm::dense_map state_vars = {{"pressure", 0.0}};
   return state_vars;
 }

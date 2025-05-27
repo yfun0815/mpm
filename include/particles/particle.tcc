@@ -155,7 +155,8 @@ bool mpm::Particle<Tdim>::initialise_particle(
           this->assign_material(materials.at(mpm::ParticlePhase::Solid));
       if (!assign_mat) throw std::runtime_error("Material assignment failed");
       // Reinitialize state variables
-      auto mat_state_vars = (this->material())->initialise_state_variables();
+      double y = this->coordinates()(1);
+      auto mat_state_vars = (this->material())->initialise_state_variables(y);
       if (mat_state_vars.size() == particle.nstate_vars) {
         unsigned i = 0;
         auto state_variables = (this->material())->state_variables();
@@ -365,7 +366,8 @@ bool mpm::Particle<Tdim>::assign_material_state_vars(
   if (material != nullptr && this->material(phase) != nullptr &&
       this->material_id(phase) == material->id()) {
     // Clone state variables
-    auto mat_state_vars = (this->material(phase))->initialise_state_variables();
+    double y = this->coordinates()(1);
+    auto mat_state_vars = (this->material(phase))->initialise_state_variables(y);
     if (state_variables_[phase].size() == state_vars.size() &&
         mat_state_vars.size() == state_vars.size()) {
       this->state_variables_[phase] = state_vars;
@@ -506,8 +508,9 @@ bool mpm::Particle<Tdim>::assign_material(
     if (material != nullptr) {
       material_.at(phase) = material;
       material_id_.at(phase) = material_[phase]->id();
+      double y = this->coordinates()(1);
       state_variables_.at(phase) =
-          material_[phase]->initialise_state_variables();
+          material_[phase]->initialise_state_variables(y);
       status = true;
     } else {
       throw std::runtime_error("Material is undefined!");
@@ -1546,7 +1549,8 @@ void mpm::Particle<Tdim>::deserialize(
                MPI_DOUBLE, MPI_COMM_WORLD);
 
     // Reinitialize state variables
-    auto mat_state_vars = (this->material())->initialise_state_variables();
+    double y = this->coordinates()(1);
+    auto mat_state_vars = (this->material())->initialise_state_variables(y);
     if (mat_state_vars.size() != nstate_vars)
       throw std::runtime_error(
           "Deserialize particle(): state_vars size mismatch");

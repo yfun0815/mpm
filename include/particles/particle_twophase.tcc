@@ -254,8 +254,9 @@ bool mpm::TwoPhaseParticle<Tdim>::initialise_particle(
           this->assign_material(solid_material, mpm::ParticlePhase::Solid);
       if (!assign_mat) throw std::runtime_error("Material assignment failed");
       // Reinitialize state variables
+      double y = this->coordinates()(1);
       auto mat_state_vars = (this->material(mpm::ParticlePhase::Solid))
-                                ->initialise_state_variables();
+                                ->initialise_state_variables(y);
       if (mat_state_vars.size() == twophase_particle->nstate_vars) {
         unsigned i = 0;
         auto state_variables =
@@ -283,8 +284,9 @@ bool mpm::TwoPhaseParticle<Tdim>::initialise_particle(
           this->assign_material(liquid_material, mpm::ParticlePhase::Liquid);
       if (!assign_mat) throw std::runtime_error("Material assignment failed");
       // Reinitialize state variables
+      double y = this->coordinates()(1);
       auto mat_state_vars = (this->material(mpm::ParticlePhase::Liquid))
-                                ->initialise_state_variables();
+                                ->initialise_state_variables(y);
       if (mat_state_vars.size() == twophase_particle->nliquid_state_vars) {
         unsigned i = 0;
         auto state_variables =
@@ -1336,8 +1338,9 @@ void mpm::TwoPhaseParticle<Tdim>::deserialize(
                MPI_DOUBLE, MPI_COMM_WORLD);
 
     // Reinitialize state variables
+    double y = this->coordinates()(1);
     auto mat_state_vars = (this->material(mpm::ParticlePhase::Solid))
-                              ->initialise_state_variables();
+                              ->initialise_state_variables(y);
     if (mat_state_vars.size() != nstate_vars)
       throw std::runtime_error(
           "Deserialize particle(): Solid phase state_vars size mismatch");
@@ -1395,8 +1398,9 @@ void mpm::TwoPhaseParticle<Tdim>::deserialize(
                MPI_DOUBLE, MPI_COMM_WORLD);
 
     // Reinitialize state variables
+    double y = this->coordinates()(1);
     auto mat_state_vars = (this->material(mpm::ParticlePhase::Liquid))
-                              ->initialise_state_variables();
+                              ->initialise_state_variables(y);
     if (mat_state_vars.size() != nliquid_state_vars)
       throw std::runtime_error(
           "Deserialize particle(): Liquid phase state_vars size mismatch");

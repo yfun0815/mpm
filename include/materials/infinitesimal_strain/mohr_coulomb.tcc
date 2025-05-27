@@ -36,6 +36,11 @@ mpm::MohrCoulomb<Tdim>::MohrCoulomb(unsigned id,
     // Residual plastic deviatoric strain
     pdstrain_residual_ =
         material_properties.at("residual_pdstrain").template get<double>();
+    // Vary cohesion with depth
+    cohesion_gradient_ =
+        material_properties.at("cohesion_gradient").template get<double>();
+    cohesion_gradient_top_ =
+        material_properties.at("cohesion_gradient_top").template get<double>();
     // Tensile strength
     tension_cutoff_ =
         material_properties.at("tension_cutoff").template get<double>();
@@ -52,7 +57,7 @@ mpm::MohrCoulomb<Tdim>::MohrCoulomb(unsigned id,
 
 //! Initialise state variables
 template <unsigned Tdim>
-mpm::dense_map mpm::MohrCoulomb<Tdim>::initialise_state_variables() {
+mpm::dense_map mpm::MohrCoulomb<Tdim>::initialise_state_variables(double y) {
   mpm::dense_map state_vars = {
       // MC parameters
       // Yield state: 0: elastic, 1: shear, 2: tensile
@@ -77,7 +82,17 @@ mpm::dense_map mpm::MohrCoulomb<Tdim>::initialise_state_variables() {
       {"theta", 0.},
       // Plastic deviatoric strain
       {"pdstrain", 0.}};
+  if (cohesion_gradient_ != 0) {
+    double cohesion_value = cohesion_peak_ + cohesion_gradient_ * (cohesion_gradient_top_-y);
+    state_vars["cohesion"] = cohesion_value;
+  }
   return state_vars;
+}
+
+//set cohesion vary with depth
+template <unsigned Tdim>
+double mpm::MohrCoulomb<Tdim>::calculate_depth_dependent_cohesion(double y) const {
+  return this->cohesion_gradient_ * (this->cohesion_gradient_top_ - y);
 }
 
 //! Initialise state variables

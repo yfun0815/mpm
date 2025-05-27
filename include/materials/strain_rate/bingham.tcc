@@ -57,7 +57,7 @@ mpm::Bingham<Tdim>::Bingham(unsigned id,
 //! Initialise history variables
 template <unsigned Tdim>
 mpm::dense_map mpm::Bingham<Tdim>::
-                            initialise_state_variables() {
+                            initialise_state_variables(double y) {
     mpm::dense_map state_vars = {
       // Papanastasiou–Roussel Bingham parameters
       // Pressure

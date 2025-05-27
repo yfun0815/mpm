@@ -43,7 +43,7 @@ class MohrCoulomb : public InfinitesimalElastoPlastic<Tdim> {
 
   //! Initialise history variables
   //! \retval state_vars State variables with history
-  mpm::dense_map initialise_state_variables() override;
+  mpm::dense_map initialise_state_variables(double y) override;
 
   //! State variables
   std::vector<std::string> state_variables() const override;
@@ -71,7 +71,8 @@ class MohrCoulomb : public InfinitesimalElastoPlastic<Tdim> {
   //! \retval status of computation of stress invariants
   bool compute_stress_invariants(const Vector6d& stress,
                                  mpm::dense_map* state_vars);
-
+  
+  double calculate_depth_dependent_cohesion(double y) const;
   //! Compute yield function and yield state
   //! \param[in] state_vars History-dependent state variables
   //! \retval yield_type Yield type (elastic, shear or tensile)
@@ -151,6 +152,9 @@ class MohrCoulomb : public InfinitesimalElastoPlastic<Tdim> {
   double pdstrain_peak_{std::numeric_limits<double>::max()};
   //! Residual plastic deviatoric strain
   double pdstrain_residual_{std::numeric_limits<double>::max()};
+  //! Vary cohesion with depth
+  double cohesion_gradient_{std::numeric_limits<double>::max()};
+  double cohesion_gradient_top_{std::numeric_limits<double>::max()};
   //! Tension cutoff
   double tension_cutoff_{std::numeric_limits<double>::max()};
   //! softening

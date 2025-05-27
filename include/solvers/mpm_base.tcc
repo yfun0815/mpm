@@ -1643,13 +1643,8 @@ void mpm::MPMBase<Tdim>::delete_particles() {
         bool success = mesh_->remove_particle_by_id(pid);
 
       }
-      if (success) {
-          // Output success info
-          console_->info("Successfully deleted particle with ID {}", pid);
-      } else {
-          // Output failure info
-          console_->warn("Failed to delete particle with ID {}", pid);
-      }
+      
+      console_->info("Successfully deleted particles.");
     }
   } catch (const std::exception& e) {
     std::cerr << "Error deleting particles: " << e.what() << "\n";

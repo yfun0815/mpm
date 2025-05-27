@@ -431,7 +431,8 @@ void mpm::FluidParticle<Tdim>::deserialize(
                MPI_DOUBLE, MPI_COMM_WORLD);
 
     // Reinitialize state variables
-    auto mat_state_vars = (this->material())->initialise_state_variables();
+    double y = this->coordinates()(1);
+    auto mat_state_vars = (this->material())->initialise_state_variables(y);
     if (mat_state_vars.size() != nstate_vars)
       throw std::runtime_error(
           "Deserialize particle(): state_vars size mismatch");

@@ -69,7 +69,7 @@ class Material {
   Ttype property(const std::string& key);
 
   //! Initialise history variables
-  virtual mpm::dense_map initialise_state_variables() = 0;
+  virtual mpm::dense_map initialise_state_variables(double y) = 0;
 
   //! State variables
   virtual std::vector<std::string> state_variables() const = 0;

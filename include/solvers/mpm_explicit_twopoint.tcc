@@ -1,9 +1,9 @@
 //! Constructor
 template <unsigned Tdim>
-mpm::MPMExplicit<Tdim>::MPMExplicit(const std::shared_ptr<IO>& io)
+mpm::MPMExplicitTwoPoint<Tdim>::MPMExplicitTwoPoint(const std::shared_ptr<IO>& io)
     : mpm::MPMBase<Tdim>(io) {
   //! Logger
-  console_ = spdlog::get("MPMExplicit");
+  console_ = spdlog::get("MPMExplicitTwoPoint");
   //! Stress update
   if (this->stress_update_ == "usl")
     mpm_scheme_ = std::make_shared<mpm::MPMSchemeUSL<Tdim>>(mesh_, dt_);
@@ -25,7 +25,7 @@ mpm::MPMExplicit<Tdim>::MPMExplicit(const std::shared_ptr<IO>& io)
 
 //! MPM Explicit solver
 template <unsigned Tdim>
-bool mpm::MPMExplicit<Tdim>::solve() {
+bool mpm::MPMExplicitTwoPoint<Tdim>::solve() {
   bool status = true;
 
   console_->info("MPM analysis type {}", io_->analysis_type());
@@ -94,8 +94,7 @@ bool mpm::MPMExplicit<Tdim>::solve() {
   } else {
     // Initialise particles
     this->initialise_particles();
-    // delete the provided particles by id
-    this->delete_particles();
+
     // Compute mass
     mesh_->iterate_over_particles(std::bind(
         &mpm::ParticleBase<Tdim>::compute_mass, std::placeholders::_1));
@@ -213,4 +212,85 @@ bool mpm::MPMExplicit<Tdim>::solve() {
                      .count());
 
   return status;
+}
+
+// Initialise mesh including solid and fluid mesh
+template <unsigned Tdim>
+void mpm::MPMExplicitTwoPoint<Tdim>::initialise_mesh() {
+  // Initialise MPI rank and size
+  int mpi_rank = 0;
+  int mpi_size = 1;
+
+#ifdef USE_MPI
+  MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+#endif
+
+  // Initilize the solid mesh
+  auto mesh_props = io_->json_object("mesh");
+  const std::string io_type = mesh_props["io_type"].template get<std::string>();
+
+  bool check_duplicates = true;
+  try {
+    check_duplicates = mesh_props["check_duplicates"].template get<bool>();
+  } catch (std::exception& exception) {
+    console_->warn(
+        "{} #{}: Check duplicates not specified, using \"true\" as default; {}",
+        __FILE__, __LINE__, exception.what());
+    check_duplicates = true;
+  }
+
+  auto mesh_io = Factory<mpm::IOMesh<Tdim>>::instance()->create(io_type);
+
+  auto nodes_begin = std::chrono::steady_clock::now();
+
+  mpm::Index gid = 0;
+  const auto node_type = mesh_props["node_type"].template get<std::string>();
+
+  std::string mesh_file =
+      io_->file_name(mesh_props["mesh"].template get<std::string>());
+
+  bool node_status =
+      mesh_->create_nodes(gid, node_type, mesh_io->read_mesh_nodes(mesh_file), check_duplicates);
+
+  if (!node_status)
+    throw std::runtime_error("mpm::base::initialise_mesh(): Addition of nodes to solid mesh failed");
+
+  auto nodes_end = std::chrono::steady_clock::now();
+  console_->info("Rank {} Read solid mesh nodes: {} ms", mpi_rank,
+                 std::chrono::duration_cast<std::chrono::milliseconds>(nodes_end - nodes_begin).count());
+
+  // Initilize the fluid mesh
+  auto fluid_mesh_props = io_->json_object("fluid_mesh");
+  const std::string fluid_io_type = fluid_mesh_props["io_type"].template get<std::string>();
+
+  bool fluid_check_duplicates = true;
+  try {
+    fluid_check_duplicates = fluid_mesh_props["check_duplicates"].template get<bool>();
+  } catch (std::exception& exception) {
+    console_->warn(
+        "{} #{}: Fluid mesh check duplicates not specified, using \"true\" as default; {}",
+        __FILE__, __LINE__, exception.what());
+    fluid_check_duplicates = true;
+  }
+
+  auto fluid_mesh_io = Factory<mpm::IOMesh<Tdim>>::instance()->create(fluid_io_type);
+
+  auto fluid_nodes_begin = std::chrono::steady_clock::now();
+
+  mpm::Index fluid_gid = 0;
+  const auto fluid_node_type = fluid_mesh_props["node_type"].template get<std::string>();
+
+  std::string fluid_mesh_file =
+      io_->file_name(fluid_mesh_props["mesh"].template get<std::string>());
+
+  bool fluid_node_status =
+      fluid_mesh_->create_nodes(fluid_gid, fluid_node_type, fluid_mesh_io->read_mesh_nodes(fluid_mesh_file), fluid_check_duplicates);
+
+  if (!fluid_node_status)
+    throw std::runtime_error("mpm::base::initialise_mesh(): Addition of nodes to fluid mesh failed");
+
+  auto fluid_nodes_end = std::chrono::steady_clock::now();
+  console_->info("Rank {} Read fluid mesh nodes: {} ms", mpi_rank,
+                  std::chrono::duration_cast<std::chrono::milliseconds>(fluid_nodes_end - fluid_nodes_begin).count());
 }

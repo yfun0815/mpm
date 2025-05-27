@@ -55,7 +55,7 @@ mpm::BinghamViscoPlastic<Tdim>::BinghamViscoPlastic(
 
 //! Initialise state variables
 template <unsigned Tdim>
-mpm::dense_map mpm::BinghamViscoPlastic<Tdim>::initialise_state_variables() {
+mpm::dense_map mpm::BinghamViscoPlastic<Tdim>::initialise_state_variables(double y) {
   mpm::dense_map state_vars = {
       // MC parameters
       // Yield state: 0: elastic, 1: shear, 2: tensile
